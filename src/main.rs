@@ -7,22 +7,27 @@
 use simpcmdlinek;
 use loggerk::{log_init, log_d};
 
-fn test_cmdline(key3magic: u32) {
+fn test_cmdline(mut key3magic: u32) {
     let mut sclm = simpcmdlinek::SimpCmdLineManager::new();
-    sclm.add_handler("--key1", &|iarg: usize, theargs: &Vec<String>| -> usize {
+
+    let mut key1h = |iarg: usize, theargs: &Vec<String>| -> usize {
         log_d(&format!("FoundArg:@{}:{}", iarg, theargs[iarg]));
         0
-    });
-    sclm.add_handler("--key2", &|iarg: usize, theargs: &Vec<String>| -> usize {
+    };
+    sclm.add_handler("--key1", &mut key1h);
+
+    let mut key2h = |iarg: usize, theargs: &Vec<String>| -> usize {
         log_d(&format!("FoundArg:@{}:{}", iarg, theargs[iarg]));
         1
-    });
-    let key3h = |iarg, theargs: &Vec<String>|-> usize {
+    };
+    sclm.add_handler("--key2", &mut key2h);
+    let mut key3h = |iarg, theargs: &Vec<String>|-> usize {
         let localmagic = key3magic;
+        key3magic += 3;
         log_d(&format!("FoundArg:@{}:{}: Also key3magic is {}", iarg, theargs[iarg], localmagic));
         0
     };
-    sclm.add_handler("--key3", &key3h);
+    sclm.add_handler("--key3", &mut key3h);
     sclm.process_args();
     drop(sclm);
 }

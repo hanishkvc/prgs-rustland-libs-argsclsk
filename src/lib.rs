@@ -17,7 +17,7 @@ use loggerk::{log_e, log_d};
 /// It needs to return has to how many additional args
 /// the handler has handled/consumed, if any.
 ///
-type ArgHandler<'a> = &'a dyn Fn(usize, &Vec<String>) -> usize;
+type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
 pub struct SimpCmdLineManager<'a> {
     handlers: HashMap<String, ArgHandler<'a>>
 }
@@ -35,7 +35,7 @@ impl<'a> SimpCmdLineManager<'a> {
         self.handlers.insert(key.to_string(), ah);
     }
 
-    pub fn process_args(&self) {
+    pub fn process_args(&mut self) {
         let theArgs: Vec<String> = env::args().collect();
         let totalArgs = theArgs.len();
         let mut iArg = 0usize;
@@ -44,7 +44,7 @@ impl<'a> SimpCmdLineManager<'a> {
             if iArg >= totalArgs {
                 break;
             }
-            let ah = self.handlers.get(&theArgs[iArg]);
+            let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
                 log_e(&format!("ERRR:SimpleCmdLineManager:ProcessArgs:Unknown arg {}", theArgs[iArg]));
                 continue;
