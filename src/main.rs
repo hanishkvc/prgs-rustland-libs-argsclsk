@@ -14,5 +14,9 @@ fn main() {
         log_d(&format!("FoundArg:@{}:{}", iarg, theargs[iarg]));
         0
     });
+    sclm.add_handler("--key2", |iarg: usize, theargs: &Vec<String>| -> usize {
+        log_d(&format!("FoundArg:@{}:{}", iarg, theargs[iarg]));
+        1
+    });
     sclm.process_args();
 }

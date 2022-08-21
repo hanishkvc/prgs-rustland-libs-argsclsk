@@ -6,5 +6,5 @@ cclean:
 	cargo clean
 
 test:
-	target/debug/simpcmdlinek testme --key1 what else
+	target/debug/simpcmdlinek testme --key1 what else --key2 this also
 
