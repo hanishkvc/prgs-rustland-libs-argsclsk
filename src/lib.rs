@@ -17,9 +17,9 @@ use loggerk::{log_e, log_d};
 /// It needs to return has to how many additional args
 /// the handler has handled/consumed, if any.
 ///
-type ArgHandler = fn(usize, &Vec<String>) -> usize;
+type ArgHandler = dyn Fn(usize, &Vec<String>) -> usize;
 pub struct SimpCmdLineManager {
-    handlers: HashMap<String, ArgHandler>
+    handlers: HashMap<String, Box<ArgHandler>>
 }
 
 #[allow(non_snake_case)]
@@ -31,7 +31,7 @@ impl SimpCmdLineManager {
         }
     }
 
-    pub fn add_handler(&mut self, key: &str, ah: ArgHandler) {
+    pub fn add_handler(&mut self, key: &str, ah: Box<ArgHandler>) {
         self.handlers.insert(key.to_string(), ah);
     }
 
