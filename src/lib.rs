@@ -7,12 +7,15 @@
 use std::collections::HashMap;
 use std::env;
 
+use loggerk::{log_e, log_d};
+
+
 ///
 /// The ArgHandler takes
 /// * a vector of cmdline arguments
 /// * index of current argument being handled
-/// It is required to return has to how many args the handler has handled/consumed.
-/// * at a minimum it should return 1 (ie the key arg itself)
+/// It needs to return has to how many additional args
+/// the handler has handled/consumed, if any.
 ///
 type ArgHandler = fn(usize, &Vec<String>) -> usize;
 struct SimpCmdLineManager {
@@ -26,19 +29,29 @@ impl SimpCmdLineManager {
         self.handlers.insert(key.to_string(), ah);
     }
 
-    fn process_args(&mut self) {
+    fn process_args(&self) {
         let theArgs: Vec<String> = env::args().collect();
         let totalArgs = theArgs.len();
-        let mut iArg = 1usize;
+        let mut iArg = 0usize;
         loop {
+            iArg += 1;
             if iArg >= totalArgs {
                 break;
             }
-
+            let ah = self.handlers.get(&theArgs[iArg]);
+            if ah.is_none() {
+                log_e(&format!("ERRR:SimpleCmdLineManager:ProcessArgs:Unknown arg {}", theArgs[iArg]));
+                continue;
+            }
+            let ah = ah.unwrap();
+            let consumed = ah(iArg, &theArgs);
+            iArg += consumed;
+            log_d(&format!("DBUG:SimpleCmdLineManager:ProcessArgs:Consumed {} and following {} args", theArgs[iArg], consumed));
         }
     }
 
 }
+
 
 #[cfg(test)]
 mod tests {
