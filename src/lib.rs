@@ -18,18 +18,24 @@ use loggerk::{log_e, log_d};
 /// the handler has handled/consumed, if any.
 ///
 type ArgHandler = fn(usize, &Vec<String>) -> usize;
-struct SimpCmdLineManager {
+pub struct SimpCmdLineManager {
     handlers: HashMap<String, ArgHandler>
 }
 
 #[allow(non_snake_case)]
 impl SimpCmdLineManager {
 
-    fn add_handler(&mut self, key: &str, ah: ArgHandler) {
+    pub fn new() -> SimpCmdLineManager {
+        SimpCmdLineManager {
+            handlers: HashMap::new(),
+        }
+    }
+
+    pub fn add_handler(&mut self, key: &str, ah: ArgHandler) {
         self.handlers.insert(key.to_string(), ah);
     }
 
-    fn process_args(&self) {
+    pub fn process_args(&self) {
         let theArgs: Vec<String> = env::args().collect();
         let totalArgs = theArgs.len();
         let mut iArg = 0usize;
