@@ -18,15 +18,15 @@ use loggerk::{log_e, log_d};
 /// the handler has handled/consumed, if any.
 ///
 type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
-pub struct SimpCmdLineManager<'a> {
+pub struct ArgsCmdLineSimpleManager<'a> {
     handlers: HashMap<String, ArgHandler<'a>>
 }
 
 #[allow(non_snake_case)]
-impl<'a> SimpCmdLineManager<'a> {
+impl<'a> ArgsCmdLineSimpleManager<'a> {
 
-    pub fn new() -> SimpCmdLineManager<'a> {
-        SimpCmdLineManager {
+    pub fn new() -> ArgsCmdLineSimpleManager<'a> {
+        ArgsCmdLineSimpleManager {
             handlers: HashMap::new(),
         }
     }
