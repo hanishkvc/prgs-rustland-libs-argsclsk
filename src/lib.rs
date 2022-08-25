@@ -35,11 +35,14 @@ type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
 ///   This doesnt include any remaining arguments.
 /// * remaining member after process_args to get the list of remaining args,
 ///   provided a remaining_marker was setup.
+///   One can check found_remainingmarker member 1st to check if marker was
+///   found among the cmdline arguments.
 ///
 pub struct ArgsCmdLineSimpleManager<'a> {
     handlers: HashMap<String, ArgHandler<'a>>,
     pub unhandled: Vec<String>,
     remaining_marker: String,
+    pub found_remainingmarker: bool,
     pub remaining: Vec<String>,
 }
 
@@ -51,6 +54,7 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             handlers: HashMap::new(),
             unhandled: Vec::new(),
             remaining_marker: String::new(),
+            found_remainingmarker: false,
             remaining: Vec::new(),
         }
     }
@@ -91,16 +95,25 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             if iArg >= totalArgs {
                 break;
             }
+            if self.found_remainingmarker {
+                self.remaining.push(theArgs[iArg].clone());
+                continue;
+            }
+            if theArgs[iArg] == self.remaining_marker {
+                self.found_remainingmarker = true;
+                log_d(&format!("DBUG:ArgsCmdLineSimpleManager:ProcessArgs:Found remaining marker[{}], remaining arguments if any will be skipped", theArgs[iArg]));
+                continue
+            }
             let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
-                log_w(&format!("WARN:SimpleCmdLineManager:ProcessArgs:Unknown unhandled arg:{}", theArgs[iArg]));
+                log_w(&format!("WARN:ArgsCmdLineSimpleManager:ProcessArgs:Unknown unhandled arg:{}", theArgs[iArg]));
                 self.unhandled.push(theArgs[iArg].clone());
                 continue;
             }
             let ah = ah.unwrap();
             let consumed = ah(iArg, &theArgs);
             iArg += consumed;
-            log_d(&format!("DBUG:SimpleCmdLineManager:ProcessArgs:Consumed {} and following {} args", theArgs[iArg], consumed));
+            log_d(&format!("DBUG:ArgsCmdLineSimpleManager:ProcessArgs:Consumed {} and following {} args", theArgs[iArg], consumed));
         }
     }
 
