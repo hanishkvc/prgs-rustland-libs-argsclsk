@@ -5,7 +5,7 @@
 //!
 
 use argsclsk;
-use loggerk::{log_init, log_d};
+use loggerk::{log_init, log_d, log_w};
 
 fn test_cmdline(mut sharedvar: u32) {
     let mut clargs = argsclsk::ArgsCmdLineSimpleManager::new();
@@ -33,6 +33,7 @@ fn test_cmdline(mut sharedvar: u32) {
     clargs.add_handler("--key3", &mut key3h);
     //log_d(&format!("DBUG:TestCmdLine:SharedVar:B4ProcessArgs:{}", sharedvar));
     clargs.process_args();
+    log_w(&format!("WARN:TestCmdLine:Unhandled args are:{:?}", clargs.unhandled));
     log_d(&format!("DBUG:TestCmdLine:SharedVar:AfterProcessArgs:{}", sharedvar));
     //drop(sclm); // By commenting out this drop, we allow compiler to auto drop it immidiately after process_args automatically
 }

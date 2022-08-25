@@ -18,8 +18,21 @@ use loggerk::{log_w, log_d};
 /// the handler has handled/consumed, if any.
 ///
 type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
+
+///
+/// The Core Entity for managing commandline arguments of a process
+/// in a simple mannger.
+/// Call its
+/// * new method to create a new instance of this.
+/// * add_handler method to specify the named arguments to process and
+///   the handler to call wrt same.
+/// * process_args method to process the cmdline arguments as needed.
+/// Access its
+/// * unhandled member after process_args to get the list of unhandled args
+///
 pub struct ArgsCmdLineSimpleManager<'a> {
-    handlers: HashMap<String, ArgHandler<'a>>
+    handlers: HashMap<String, ArgHandler<'a>>,
+    pub unhandled: Vec<String>,
 }
 
 #[allow(non_snake_case)]
@@ -28,6 +41,7 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
     pub fn new() -> ArgsCmdLineSimpleManager<'a> {
         ArgsCmdLineSimpleManager {
             handlers: HashMap::new(),
+            unhandled: Vec::new(),
         }
     }
 
@@ -59,7 +73,8 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             }
             let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
-                log_w(&format!("WARN:SimpleCmdLineManager:ProcessArgs:Unknown arg:{}", theArgs[iArg]));
+                log_w(&format!("WARN:SimpleCmdLineManager:ProcessArgs:Unknown unhandled arg:{}", theArgs[iArg]));
+                self.unhandled.push(theArgs[iArg].clone());
                 continue;
             }
             let ah = ah.unwrap();
