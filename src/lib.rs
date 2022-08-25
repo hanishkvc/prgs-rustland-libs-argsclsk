@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 use std::env;
 
-use loggerk::{log_e, log_d};
+use loggerk::{log_w, log_d};
 
 
 ///
@@ -59,7 +59,7 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             }
             let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
-                log_e(&format!("ERRR:SimpleCmdLineManager:ProcessArgs:Unknown arg:{}", theArgs[iArg]));
+                log_w(&format!("WARN:SimpleCmdLineManager:ProcessArgs:Unknown arg:{}", theArgs[iArg]));
                 continue;
             }
             let ah = ah.unwrap();
