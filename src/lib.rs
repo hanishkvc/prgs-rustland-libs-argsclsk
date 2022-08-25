@@ -12,8 +12,8 @@ use loggerk::{log_e, log_d};
 
 ///
 /// The ArgHandler takes
-/// * a vector of cmdline arguments
 /// * index of current argument being handled
+/// * a vector of cmdline arguments
 /// It needs to return has to how many additional args
 /// the handler has handled/consumed, if any.
 ///
@@ -31,10 +31,23 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
         }
     }
 
+    ///
+    /// Specify
+    /// * the named arg to process in the command line arguments list
+    /// * the handler that should be called to process the same
+    ///
+    /// Handler is defined as a closure to allow any variable in the
+    /// enclosing context in the caller to be manipulated.
+    ///
     pub fn add_handler(&mut self, key: &str, ah: ArgHandler<'a>) {
         self.handlers.insert(key.to_string(), ah);
     }
 
+    ///
+    /// Once all the required named arguments and their handlers have
+    /// been setup using add_handler, call this to process the cmdline
+    /// arguments of the program / process calling this.
+    ///
     pub fn process_args(&mut self) {
         let theArgs: Vec<String> = env::args().collect();
         let totalArgs = theArgs.len();
@@ -46,7 +59,7 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             }
             let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
-                log_e(&format!("ERRR:SimpleCmdLineManager:ProcessArgs:Unknown arg {}", theArgs[iArg]));
+                log_e(&format!("ERRR:SimpleCmdLineManager:ProcessArgs:Unknown arg:{}", theArgs[iArg]));
                 continue;
             }
             let ah = ah.unwrap();
