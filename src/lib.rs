@@ -26,13 +26,21 @@ type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
 /// * new method to create a new instance of this.
 /// * add_handler method to specify the named arguments to process and
 ///   the handler to call wrt same.
+/// * set_remaining_marker method to optionally set a marker wrt remaining
+///   arguments towards the end. All arguments after this marker in the
+///   commandline will be collected into the remaining member.
 /// * process_args method to process the cmdline arguments as needed.
 /// Access its
-/// * unhandled member after process_args to get the list of unhandled args
+/// * unhandled member after process_args to get the list of unhandled args.
+///   This doesnt include any remaining arguments.
+/// * remaining member after process_args to get the list of remaining args,
+///   provided a remaining_marker was setup.
 ///
 pub struct ArgsCmdLineSimpleManager<'a> {
     handlers: HashMap<String, ArgHandler<'a>>,
     pub unhandled: Vec<String>,
+    remaining_marker: String,
+    pub remaining: Vec<String>,
 }
 
 #[allow(non_snake_case)]
@@ -42,6 +50,8 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
         ArgsCmdLineSimpleManager {
             handlers: HashMap::new(),
             unhandled: Vec::new(),
+            remaining_marker: String::new(),
+            remaining: Vec::new(),
         }
     }
 
@@ -55,6 +65,16 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
     ///
     pub fn add_handler(&mut self, key: &str, ah: ArgHandler<'a>) {
         self.handlers.insert(key.to_string(), ah);
+    }
+
+    ///
+    /// Call this optionally to set a remaining args marker wrt the cmdline.
+    /// Any arguments after this marker, will not be handled by this library.
+    /// User can get the list of such arguments by accessing remaining member
+    /// after call to process_args.
+    ///
+    pub fn set_remaining_marker(&mut self, marker: &str) {
+        self.remaining_marker = marker.to_string().clone();
     }
 
     ///
