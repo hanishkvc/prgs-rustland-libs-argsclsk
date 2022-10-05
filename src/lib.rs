@@ -106,6 +106,11 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             }
             let ah = self.handlers.get_mut(&theArgs[iArg]);
             if ah.is_none() {
+                if theArgs[iArg] == "--help" {
+                    for k in self.handlers.keys() {
+                        log_d(&format!("\t{}\n", k));
+                    }
+                }
                 log_w(&format!("WARN:ArgsCmdLineSimpleManager:ProcessArgs:Unknown unhandled arg:{}", theArgs[iArg]));
                 self.unhandled.push(theArgs[iArg].clone());
                 continue;
