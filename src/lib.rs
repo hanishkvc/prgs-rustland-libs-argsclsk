@@ -11,32 +11,38 @@ use loggerk::{log_w, log_d};
 
 
 ///
-/// The ArgHandler takes
+/// The ArgHandler gives signature of the function/closure one needs to create,
+/// to process any needed cmdline arg.
+///
+/// It takes
 /// * index of current argument being handled
 /// * a vector of cmdline arguments
-/// It needs to return has to how many additional args
-/// the handler has handled/consumed, if any.
+///
+/// It needs to return has to how many additional args the handler has
+/// handled/consumed, if any.
 ///
 type ArgHandler<'a> = &'a mut dyn FnMut(usize, &Vec<String>) -> usize;
 
 ///
-/// The Core Entity for managing commandline arguments of a process
-/// in a simple mannger.
+/// The Core Entity for managing commandline arguments of a process in this simple mannger.
+///
 /// Call its
 /// * new method to create a new instance of this.
-/// * add_handler method to specify the named arguments to process and
+/// * add_handler method to specify the named argument to process and
 ///   the handler to call wrt same.
+///   * call this for each named cmdline argument that one wants to process.
 /// * set_remaining_marker method to optionally set a marker wrt remaining
 ///   arguments towards the end. All arguments after this marker in the
 ///   commandline will be collected into the remaining member.
 /// * process_args method to process the cmdline arguments as needed.
+///
 /// Access its
 /// * unhandled member after process_args to get the list of unhandled args.
 ///   This doesnt include any remaining arguments.
 /// * remaining member after process_args to get the list of remaining args,
 ///   provided a remaining_marker was setup.
-///   One can check found_remainingmarker member 1st to check if marker was
-///   found among the cmdline arguments.
+///   * One can check found_remainingmarker member 1st to check if marker was
+///     found among the cmdline arguments.
 ///
 pub struct ArgsCmdLineSimpleManager<'a> {
     handlers: HashMap<String, ArgHandler<'a>>,
