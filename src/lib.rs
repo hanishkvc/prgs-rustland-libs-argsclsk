@@ -117,8 +117,8 @@ impl<'a> ArgsCmdLineSimpleManager<'a> {
             }
             let ah = ah.unwrap();
             let consumed = ah(iArg, &theArgs);
+            log_d(&format!("DBUG:ArgsCmdLineSimpleManager:ProcessArgs:Consumed {} and {} following args", theArgs[iArg], consumed));
             iArg += consumed;
-            log_d(&format!("DBUG:ArgsCmdLineSimpleManager:ProcessArgs:Consumed {} and following {} args", theArgs[iArg], consumed));
         }
     }
 
